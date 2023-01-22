@@ -24,6 +24,28 @@ ChartJS.register(
   BarController
 );
 
+const getBarChartData = async (exchange_firm) => {
+  try {
+    const res = await fetch(`http://127.0.0.1:5000/getCancelledCountByTime`);
+    const data = await res.json();
+    console.log(data);
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getScatterData = async (exchange_firm) => {
+  try {
+    const res = await fetch(`http://127.0.0.1:5000/getCancelledCountByTime`);
+    const data = await res.json();
+    console.log(data);
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 function bar_chart(obj) {
   let data = {
     labels,
@@ -95,10 +117,22 @@ export const order_flow_data = {};
 
 export default function TSX() {
   return (
-    <div>
-      <h3></h3>
-      <Chart type="bar" data={bar_chart()} />;
-      <Chart type="scatter" data={linear_regression()} />;
-    </div>
+    <>
+      <div>
+        <h3>TSX</h3>
+        <Chart type="bar" data={bar_chart(getBarChartData("TSX"))} />;
+        <Chart type="scatter" data={linear_regression("TSX")} />;
+      </div>
+      <div>
+        <h3>AlphaData</h3>
+        <Chart type="bar" data={bar_chart(getBarChartData("AD"))} />;
+        <Chart type="scatter" data={linear_regression("AD")} />;
+      </div>
+      <div>
+        <h3>AequitasData</h3>
+        <Chart type="bar" data={bar_chart(getBarChartData("ED"))} />;
+        <Chart type="scatter" data={linear_regression("ED")} />;
+      </div>
+    </>
   );
 }
