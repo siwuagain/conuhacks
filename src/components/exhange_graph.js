@@ -24,115 +24,135 @@ ChartJS.register(
   BarController
 );
 
-const getBarChartData = async (exchange_firm) => {
+
+const getBarChartData = async (index) => {
   try {
     const res = await fetch(`http://127.0.0.1:5000/getCancelledCountByTime`);
     const data = await res.json();
-    console.log(data);
-    return data;
+    const obj = data[index]
+    let cancelCounts = [null, null, null, null]
+    if (obj.Cancelled.length > 0) {
+      for (let i = 0; i < obj.Cancelled.length; i++) {
+        if (obj.Cancelled[i].Time.endsWith("8")) {
+          cancelCounts[0] = obj.Cancelled[i].Count;
+        } else if (obj.Cancelled[i].Time.endsWith("9")){
+          cancelCounts[1] = obj.Cancelled[i].Count;
+        } else if (obj.Cancelled[i].Time.endsWith("0")){
+          cancelCounts[2] = obj.Cancelled[i].Count;
+        } else {
+        cancelCounts[3] = obj.Cancelled[i].Count;
+        }
+      }
+    }
+    let tradeCounts = [null, null, null, null]
+    if (obj.Trade.length > 0) {
+      for (let i = 0; i < obj.Trade.length; i++) {
+        if (obj.Trade[i].Time.endsWith("8")){
+          tradeCounts[0] = obj.Trade[i].Count;
+        } else if (obj.Trade[i].Time.endsWith("9")){
+          tradeCounts[1] = obj.Trade[i].Count;
+        } else if (obj.Trade[i].Time.endsWith("0")){
+          tradeCounts[2] = obj.Trade[i].Count;
+        } else {
+          tradeCounts[3] = obj.Trade[i].Count;
+        }
+      }
+    }
+    return [tradeCounts, cancelCounts]
   } catch (err) {
     console.log(err);
   }
 };
 
-const getScatterData = async (exchange_firm) => {
-  try {
-    const res = await fetch(`http://127.0.0.1:5000/getCancelledCountByTime`);
-    const data = await res.json();
-    console.log(data);
-    return data;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-function bar_chart(obj) {
-  let data = {
-    labels,
-    datasets: [
-      {
-        type: "bar",
-        label: "Cancelled Orders",
-        backgroundColor: "rgb(255, 99, 132)",
-        borderWidth: 2,
-        fill: false,
-        data: [10, 10, 10, 10, 10],
-      },
-      {
-        type: "bar",
-        label: "Successful Trades",
-        backgroundColor: "rgb(75, 192, 192)",
-        data: [10, 10, 10, 10, 10],
-        borderColor: "white",
-        borderWidth: 2,
-      },
-    ],
-  };
-  return data;
+async function chartData(index) {
+  let results = await getBarChartData(index)
+  console.log(results)
+  const cancelCount = results[0]
+  console.log(cancelCount)
+  const tradeCount = results[1]
 }
 
-function linear_regression(obj) {
-  let data = {
-    datasets: [
-      {
-        label: "New Orders Requests",
-        data: [
-          {
-            x: -10,
-            y: 0,
-          },
-          {
-            x: 0,
-            y: 10,
-          },
-          {
-            x: 10,
-            y: 5,
-          },
-          {
-            x: 0.5,
-            y: 5.5,
-          },
-        ],
-        backgroundColor: "rgb(255, 99, 132)",
-      },
-      {
-        label: "Acknowledged New Orders",
-        data: [],
-        backgroundColor: "",
-      },
-      {
-        label: "Trade",
-        data: [],
-        backgroundColor: "",
-      },
-    ],
-  };
-  return data;
+let TSX = {
+  datasets: [
+  {
+    type: "bar",
+    label: "Cancelled Orders",
+    backgroundColor: "rgb(255, 99, 132)",
+    borderWidth: 2,
+    fill: false,
+    data: [5173, 5136, 16722, 14903],
+  },
+  {
+    type: "bar",
+    label: "Successful Trades",
+    backgroundColor: "rgb(75, 192, 192)",
+    borderColor: "white",
+    borderWidth: 2,
+    data: [null, null, 2536, 24]
+  },
+],
+labels : ["9:28", "9:29", "9:30", "9:31"],
 }
 
-const labels = ["9:28", "9:29", "9:30", "9:31", "9:32"];
+let AD = {
+  datasets: [
+    {
+      type: "bar",
+      label: "Cancelled Orders",
+      backgroundColor: "rgb(255, 99, 132)",
+      borderWidth: 2,
+      fill: false,
+      data: [null, null, 22, 7],
+    },
+    {
+      type: "bar",
+      label: "Successful Trades",
+      backgroundColor: "rgb(75, 192, 192)",
+      borderColor: "white",
+      borderWidth: 2,
+      data: [null, null, null, null]
+    },
+  ],
+  labels : ["9:28", "9:29", "9:30", "9:31"],
+}
 
-export const order_flow_data = {};
+let ED = {datasets: [
+  {
+    type: "bar",
+    label: "Cancelled Orders",
+    backgroundColor: "rgb(255, 99, 132)",
+    borderWidth: 2,
+    fill: false,
+    data: [381, 212, 1638, 1653],
+  },
+  {
+    type: "bar",
+    label: "Successful Trades",
+    backgroundColor: "rgb(75, 192, 192)",
+    borderColor: "white",
+    borderWidth: 2,
+    data: [null, null, 11, 1]
+  },
+],
+labels : ["9:28", "9:29", "9:30", "9:31"],
+}
 
-export default function TSX() {
+export default function graphs() {
   return (
     <>
       <div>
-        <h3>TSX</h3>
-        <Chart type="bar" data={bar_chart(getBarChartData("TSX"))} />;
-        <Chart type="scatter" data={linear_regression("TSX")} />;
+        <h1>TSX</h1>
+        <Chart type="bar" data={TSX} />
       </div>
       <div>
-        <h3>AlphaData</h3>
-        <Chart type="bar" data={bar_chart(getBarChartData("AD"))} />;
-        <Chart type="scatter" data={linear_regression("AD")} />;
+        <h1>AlphaData</h1>
+        <Chart type="bar" data={AD} />
       </div>
       <div>
-        <h3>AequitasData</h3>
-        <Chart type="bar" data={bar_chart(getBarChartData("ED"))} />;
-        <Chart type="scatter" data={linear_regression("ED")} />;
+        <h1>AequitasData</h1>
+        <Chart type="bar" data={ED} />
       </div>
     </>
+    
   );
 }
